@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Events - Charity Events</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="navbar"></div>
+
+    <div class="container">
+        <h2 style="margin-bottom: 1.5rem;">Search Charity Events</h2>
+
+        <!-- Search form -->
+        <div class="search-form">
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="searchDate">Event Date:</label>
+                    <input type="date" id="searchDate" name="date">
+                </div>
+
+                <div class="form-group">
+                    <label for="searchLocation">Location (keyword):</label>
+                    <input type="text" id="searchLocation" name="location"
+                           placeholder="e.g. Sydney, Melbourne...">
+                </div>
+
+                <!-- Category dropdown (options loaded by JS) -->
+                <div class="form-group">
+                    <label for="searchCategory">Category:</label>
+                    <select id="searchCategory" name="category">
+                        <option value="">-- All Categories --</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="reset" class="btn btn-secondary" id="clearBtn">Clear Filters</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Error message area -->
+        <div id="errorBox" class="error-message" style="display: none;"></div>
+
+        <!-- Search results area -->
+        <div id="results-container">
+            <p class="loading">Use the filters above to find events.</p>
+        </div>
+    </div>
+
+    <!-- Footer (rendered by JS) -->
+    <div id="footer"></div>
+
+    <script src="js/common.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

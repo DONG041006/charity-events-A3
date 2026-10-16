@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charity Events - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navigation bar (rendered by JS) -->
+    <div id="navbar"></div>
+
+    <!-- Hero banner (static content) -->
+    <header class="hero">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">Together We Make a Difference</span>
+            <h1 class="hero-title">Support Our Charity Events</h1>
+            <p class="hero-sub">
+                We connect people with meaningful causes across Australia.
+                Discover upcoming events, buy a ticket, or make a donation -
+                every contribution brings help to those in need.
+            </p>
+            <div class="hero-actions">
+                <a href="#events" class="btn btn-primary btn-lg">Explore Events</a>
+                <a href="search.html" class="btn btn-outline btn-lg">Find an Event</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Live stats strip (filled by JS from the API) -->
+    <section class="stats-strip">
+        <div class="stat-item">
+            <div class="stat-value" id="statEvents">0</div>
+            <div class="stat-label">Active Events</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statRaised">$0</div>
+            <div class="stat-label">Raised So Far</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statGoal">$0</div>
+            <div class="stat-label">Combined Goal</div>
+        </div>
+    </section>
+
+    <!-- Event listing (filled by JS) -->
+    <div class="container" id="events">
+        <h2 class="section-title">Upcoming &amp; Ongoing Events</h2>
+        <p class="section-sub">Join these events and be part of something meaningful.</p>
+        <div id="events-container">
+            <p class="loading">Loading events...</p>
+        </div>
+    </div>
+
+    <!-- Organisations (static content) -->
+    <section class="org-section">
+        <div class="container">
+            <h2 class="section-title">The Organisations Behind the Events</h2>
+            <p class="section-sub">Three charities working every day to improve lives in our communities.</p>
+            <div class="org-grid">
+                <div class="org-card">
+                    <h3>Hope Foundation</h3>
+                    <p>Improving education and healthcare for children in rural communities across Australia.</p>
+                </div>
+                <div class="org-card">
+                    <h3>Green Earth Charity</h3>
+                    <p>Environmental conservation, tree planting, and sustainable living initiatives.</p>
+                </div>
+                <div class="org-card">
+                    <h3>Community Care Network</h3>
+                    <p>Supporting elderly and vulnerable members of society through food programs and home visits.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (rendered by JS) -->
+    <div id="footer"></div>
+
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>

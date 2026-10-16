@@ -1,0 +1,15 @@
+{
+  "name": "charity-events",
+  "version": "1.0.0",
+  "description": "PROG2002 A2 - Charity Events Management Dynamic Website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}
