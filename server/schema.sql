@@ -1,5 +1,5 @@
 -- ============================================================
--- PROG2002 A2: Charity Events Database Schema
+-- PROG2002 A3: Charity Events Database Schema
 -- Database name: charityevents_db
 -- ============================================================
 
@@ -53,6 +53,29 @@ CREATE TABLE charity_events (
     FOREIGN KEY (category_id)
         REFERENCES event_categories(id)
         ON DELETE CASCADE
+);
+
+-- ============================================================
+-- Table 4: registrations (A3 - event registration / ticket purchase)
+-- A user may register for multiple events, but only once per event.
+-- UNIQUE(event_id, email) enforces "one registration per event per user".
+-- ============================================================
+CREATE TABLE registrations (
+    id                INT AUTO_INCREMENT PRIMARY KEY,
+    event_id          INT NOT NULL,             -- which event the user registered for
+    full_name         VARCHAR(200) NOT NULL,    -- user details
+    email             VARCHAR(200) NOT NULL,    -- contact / unique user identity
+    phone             VARCHAR(30),              -- contact details
+    tickets_purchased INT NOT NULL DEFAULT 1,   -- number of tickets purchased
+    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,  -- date of registration
+
+    -- foreign key to the event table
+    FOREIGN KEY (event_id)
+        REFERENCES charity_events(id)
+        ON DELETE CASCADE,
+
+    -- one user can register for the same event only once
+    UNIQUE KEY uq_event_email (event_id, email)
 );
 
 -- ============================================================
@@ -145,3 +168,29 @@ INSERT INTO charity_events
  'An online silent auction featuring homemade crafts, garden produce, and services donated by local businesses. All funds support our home-visit program.',
  '2026-11-01 00:00:00', 'Online (NSW region)',
  5.00, 10000.00, 3400.00, 'upcoming', 'images/online2.jpg');
+
+-- ============================================================
+-- Seed data: registrations (at least 10)
+-- Spread across events 1, 2, 4 and 5 (events shown on the site).
+-- Note: each (event_id, email) pair is unique (one registration per event per user).
+-- ============================================================
+INSERT INTO registrations
+(event_id, full_name, email, phone, tickets_purchased, registration_date) VALUES
+
+-- Event 1: Annual Charity Gala Dinner 2026
+(1, 'Sarah Thompson',  'sarah.thompson@example.com',   '0412 555 101', 2, '2026-10-05 10:20:00'),
+(1, 'James Chen',      'james.chen@example.com',       '0433 555 102', 1, '2026-10-08 14:05:00'),
+(1, 'Priya Sharma',    'priya.sharma@example.com',     '0444 555 103', 4, '2026-10-12 09:45:00'),
+
+-- Event 2: Green Earth Community Fun Run
+(2, 'Michael O''Brien', 'm.obrien@example.com',         '0415 555 104', 3, '2026-10-06 16:30:00'),
+(2, 'Emily Watson',    'emily.watson@example.com',     '0422 555 105', 2, '2026-10-15 11:00:00'),
+
+-- Event 4: Children Education Online Fundraiser
+(4, 'David Nguyen',    'd.nguyen@example.com',         '0401 555 106', 1, '2026-10-02 08:15:00'),
+(4, 'Anna Petrova',    'anna.petrova@example.com',     '0435 555 107', 5, '2026-10-09 13:40:00'),
+(4, 'Robert Hughes',   'r.hughes@example.com',         '0411 555 108', 2, '2026-10-14 18:25:00'),
+
+-- Event 5: Riverside Clean-up Volunteer Day
+(5, 'Grace Liu',       'grace.liu@example.com',        '0455 555 109', 1, '2026-10-03 09:00:00'),
+(5, 'Liam Johnson',    'liam.johnson@example.com',     '0429 555 110', 6, '2026-10-16 12:10:00');
