@@ -4,8 +4,15 @@
 // event, and lets the user submit a registration (ticket purchase) via
 // POST /api/events/:id/register.
 
+/** @type {Object|null} The event currently being registered for. */
 let currentEvent = null;
 
+/**
+ * Initialise the registration page once the DOM is ready.
+ * Reads the event id from the query string and loads the event, or shows a
+ * fatal error when no id was supplied.
+ * @returns {void}
+ */
 document.addEventListener('DOMContentLoaded', function () {
     renderNavbar('');
     renderFooter();
@@ -20,7 +27,11 @@ document.addEventListener('DOMContentLoaded', function () {
     loadEventForRegistration(eventId);
 });
 
-// Load the event summary and wire up the form
+/**
+ * Load the event summary, then reveal and wire up the registration form.
+ * @param {string|number} eventId - The id of the event to register for.
+ * @returns {Promise<void>}
+ */
 async function loadEventForRegistration(eventId) {
     const summary = document.getElementById('event-summary');
 
@@ -54,7 +65,11 @@ async function loadEventForRegistration(eventId) {
     }
 }
 
-// Render the compact event summary at the top of the page
+/**
+ * Render the compact event summary card above the registration form.
+ * @param {Object} event - The event object returned by GET /api/events/:id.
+ * @returns {void}
+ */
 function renderEventSummary(event) {
     const summary = document.getElementById('event-summary');
     summary.innerHTML = `
@@ -85,7 +100,11 @@ function renderEventSummary(event) {
     `;
 }
 
-// Recalculate the order total from the ticket price and selected quantity
+/**
+ * Recalculate the order total from the ticket price and selected quantity.
+ * Free events (price 0) are displayed as "Free".
+ * @returns {void}
+ */
 function updateTotal() {
     if (!currentEvent) return;
 
@@ -101,7 +120,13 @@ function updateTotal() {
     totalEl.textContent = price === 0 ? 'Free' : formatCurrency(total);
 }
 
-// Validate and submit the registration form
+/**
+ * Validate the form and POST the registration to the API.
+ * Handles 201 (success), 400 (validation), 404 (missing event) and
+ * 409 (duplicate registration) responses.
+ * @param {Event} event - The form submit event.
+ * @returns {Promise<void>}
+ */
 async function handleSubmit(event) {
     event.preventDefault();
 
@@ -168,7 +193,15 @@ async function handleSubmit(event) {
     }
 }
 
-// Show the confirmation panel after a successful registration
+/**
+ * Show the confirmation panel after a successful registration.
+ * @param {Object} data - The successful response body (contains the new id).
+ * @param {Object} payload - The registration payload that was submitted.
+ * @param {string} payload.full_name - Registrant's full name.
+ * @param {string} payload.email - Registrant's email.
+ * @param {number} payload.tickets_purchased - Number of tickets bought.
+ * @returns {void}
+ */
 function showSuccess(data, payload) {
     document.getElementById('registration-card').style.display = 'none';
     document.getElementById('event-summary').style.display = 'none';
@@ -192,7 +225,11 @@ function showSuccess(data, payload) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Show a fatal error that replaces the whole registration area
+/**
+ * Show a fatal error that replaces the whole registration area.
+ * @param {string} message - The error message to display.
+ * @returns {void}
+ */
 function showPageError(message) {
     document.getElementById('event-summary').style.display = 'none';
     document.getElementById('registration-card').style.display = 'none';
@@ -201,7 +238,11 @@ function showPageError(message) {
     box.style.display = 'block';
 }
 
-// Show a validation / submission error inside the form
+/**
+ * Show a validation or submission error inside the form.
+ * @param {string} message - The error message to display.
+ * @returns {void}
+ */
 function showFormError(message) {
     const formError = document.getElementById('formError');
     formError.textContent = message;
@@ -209,7 +250,11 @@ function showFormError(message) {
     formError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Escape user-supplied text before inserting it into HTML
+/**
+ * Escape user-supplied text so it can be safely inserted into innerHTML.
+ * @param {string} text - The raw text to escape.
+ * @returns {string} The HTML-escaped text.
+ */
 function escapeHtml(text) {
     return String(text)
         .replace(/&/g, '&amp;')

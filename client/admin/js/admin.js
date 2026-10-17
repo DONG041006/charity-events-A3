@@ -1,6 +1,10 @@
 // admin.js - admin dashboard logic (full CRUD for charity events)
 //
-// Talks to the same REST API as the public site:
+// Reuses the shared helpers from common.js (renderNavbar, renderFooter,
+// formatCurrency) so the admin pages share the same header/nav/footer as the
+// public site.
+//
+// Talks to the REST API:
 //   GET    /api/events/upcoming   list active events
 //   GET    /api/categories        categories for the dropdown
 //   GET    /api/events/:id        full event (used when editing)
@@ -8,19 +12,25 @@
 //   PUT    /api/events/:id        update an event
 //   DELETE /api/events/:id        delete an event (409 if registrations exist)
 
-const API_BASE = '/api';
+// NOTE: API_BASE ('/api') is declared once in common.js and reused here.
 
-// The API does not expose an organizations endpoint, so the organization
-// dropdown uses the same organizations seeded in server/schema.sql
-// (Hope Foundation, Green Earth Charity, Community Care Network).
+/**
+ * The API does not expose an organizations endpoint, so the organization
+ * dropdown uses the same organizations seeded in server/schema.sql
+ * (Hope Foundation, Green Earth Charity, Community Care Network).
+ * @type {Array<{id:number, name:string}>}
+ */
 const ORGANIZATIONS = [
     { id: 1, name: 'Hope Foundation' },
     { id: 2, name: 'Green Earth Charity' },
     { id: 3, name: 'Community Care Network' }
 ];
 
-// Images shipped with the client (client/images). Values are stored relative
-// to the client root, exactly as in schema.sql seed data.
+/**
+ * Images shipped with the client (client/images). Values are stored relative
+ * to the site root, exactly as in schema.sql seed data.
+ * @type {string[]}
+ */
 const IMAGE_OPTIONS = [
     'images/dinner1.jpg',
     'images/run1.jpg',
@@ -30,11 +40,22 @@ const IMAGE_OPTIONS = [
     'images/volunteer1.jpg'
 ];
 
-let editingId = null;      // null = creating, otherwise the id being edited
-let eventsCache = [];      // latest loaded events (used to resolve titles)
+/** @type {number|null} null = creating, otherwise the id of the event being edited. */
+let editingId = null;
+/** @type {Array<Object>} The most recently loaded events (used to resolve titles). */
+let eventsCache = [];
+/** @type {number|undefined} Timer handle for auto-hiding the success message. */
 let messageTimer = null;
 
+/**
+ * Initialise the dashboard once the DOM is ready.
+ * @returns {void}
+ */
 document.addEventListener('DOMContentLoaded', function () {
+    // Shared header/nav and footer (same single source as the public site)
+    renderNavbar('admin');
+    renderFooter();
+
     populateOrganizations();
     populateImageOptions();
     updateImagePreview();
@@ -43,6 +64,10 @@ document.addEventListener('DOMContentLoaded', function () {
     bindEvents();
 });
 
+/**
+ * Attach all static event listeners.
+ * @returns {void}
+ */
 function bindEvents() {
     document.getElementById('newEventBtn').addEventListener('click', newEvent);
     document.getElementById('cancelBtn').addEventListener('click', cancelEdit);
@@ -52,6 +77,10 @@ function bindEvents() {
 
 /* ---------------- Dropdown population ---------------- */
 
+/**
+ * Populate the organization dropdown from the static ORGANIZATIONS list.
+ * @returns {void}
+ */
 function populateOrganizations() {
     const sel = document.getElementById('organization');
     sel.innerHTML = '<option value="">-- Select organization --</option>' +
@@ -60,6 +89,10 @@ function populateOrganizations() {
         }).join('');
 }
 
+/**
+ * Populate the image dropdown from the static IMAGE_OPTIONS list.
+ * @returns {void}
+ */
 function populateImageOptions() {
     const sel = document.getElementById('imageUrl');
     sel.innerHTML = '<option value="">No image</option>' +
@@ -68,6 +101,10 @@ function populateImageOptions() {
         }).join('');
 }
 
+/**
+ * Load the event categories and populate the category dropdown.
+ * @returns {Promise<void>}
+ */
 async function loadCategories() {
     try {
         const res = await fetch(`${API_BASE}/categories`);
@@ -87,6 +124,10 @@ async function loadCategories() {
 
 /* ---------------- Events listing ---------------- */
 
+/**
+ * Load active events (upcoming/ongoing) and render them into the table.
+ * @returns {Promise<void>}
+ */
 async function loadEvents() {
     const container = document.getElementById('eventsTableContainer');
     container.innerHTML = '<p class="loading">Loading events...</p>';
@@ -113,6 +154,11 @@ async function loadEvents() {
     }
 }
 
+/**
+ * Render the loaded events as dashboard table rows.
+ * @param {Array<Object>} events - The active events returned by the API.
+ * @returns {void}
+ */
 function renderTable(events) {
     const rows = events.map(function (ev) {
         return `
@@ -124,7 +170,7 @@ function renderTable(events) {
                 <td>${escapeHtml(ev.organization_name || '')}</td>
                 <td>${formatEventDate(ev.event_date)}</td>
                 <td>${escapeHtml(ev.location || '')}</td>
-                <td>${money(ev.ticket_price)}</td>
+                <td>${formatCurrency(ev.ticket_price)}</td>
                 <td><span class="badge badge-${ev.status}">${ev.status}</span></td>
                 <td class="col-actions">
                     <button class="btn btn-ghost btn-sm" onclick="editEvent(${ev.id})">Edit</button>
@@ -157,6 +203,10 @@ function renderTable(events) {
 
 /* ---------------- Create / Edit ---------------- */
 
+/**
+ * Switch the form into "create" mode and show it.
+ * @returns {void}
+ */
 function newEvent() {
     editingId = null;
     resetForm();
@@ -166,6 +216,11 @@ function newEvent() {
     document.getElementById('eventFormCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+/**
+ * Load one event and populate the form so it can be edited.
+ * @param {number|string} id - The id of the event to edit.
+ * @returns {Promise<void>}
+ */
 async function editEvent(id) {
     try {
         const res = await fetch(`${API_BASE}/events/${id}`);
@@ -202,6 +257,11 @@ async function editEvent(id) {
     }
 }
 
+/**
+ * Validate the form and create (POST) or update (PUT) the event.
+ * @param {Event} event - The form submit event.
+ * @returns {Promise<void>}
+ */
 async function handleSubmit(event) {
     event.preventDefault();
     hideFieldError();
@@ -266,6 +326,12 @@ async function handleSubmit(event) {
     }
 }
 
+/**
+ * Delete an event after confirmation. A 409 response means the event has
+ * existing registrations and cannot be deleted.
+ * @param {number|string} id - The id of the event to delete.
+ * @returns {Promise<void>}
+ */
 async function deleteEvent(id) {
     const ev = eventsCache.find(function (x) { return x.id === id; });
     const title = ev ? ev.title : 'this event';
@@ -305,6 +371,10 @@ async function deleteEvent(id) {
     }
 }
 
+/**
+ * Cancel editing/creation, reset the form and hide it.
+ * @returns {void}
+ */
 function cancelEdit() {
     editingId = null;
     resetForm();
@@ -313,20 +383,28 @@ function cancelEdit() {
 
 /* ---------------- Form helpers ---------------- */
 
+/** Show the create/edit form card. @returns {void} */
 function showForm() {
     document.getElementById('eventFormCard').style.display = 'block';
 }
 
+/** Hide the create/edit form card. @returns {void} */
 function hideForm() {
     document.getElementById('eventFormCard').style.display = 'none';
 }
 
+/** Reset the form, hide its error and refresh the image preview. @returns {void} */
 function resetForm() {
     document.getElementById('eventForm').reset();
     hideFieldError();
     updateImagePreview();
 }
 
+/**
+ * Show an error inside the form card.
+ * @param {string} html - The error message (may contain safe HTML entities).
+ * @returns {void}
+ */
 function showFieldError(html) {
     const el = document.getElementById('formError');
     el.innerHTML = html;
@@ -334,22 +412,34 @@ function showFieldError(html) {
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+/** Hide the form error. @returns {void} */
 function hideFieldError() {
     document.getElementById('formError').style.display = 'none';
 }
 
+/**
+ * Update the selected-image preview. Image src values are root-relative
+ * (the page sets <base href="/">).
+ * @returns {void}
+ */
 function updateImagePreview() {
     const sel = document.getElementById('imageUrl');
     const wrap = document.getElementById('imagePreview');
     const img = document.getElementById('imagePreviewImg');
     if (sel.value) {
-        img.src = '../' + sel.value; // admin page lives under /admin/
+        img.src = sel.value;
         wrap.style.display = 'block';
     } else {
         wrap.style.display = 'none';
     }
 }
 
+/**
+ * Show a global status/error message; success messages auto-hide.
+ * @param {string} text - The message to display.
+ * @param {'success'|'error'} type - The message type.
+ * @returns {void}
+ */
 function showMessage(text, type) {
     const el = document.getElementById('adminMessage');
     el.textContent = text;
@@ -363,22 +453,31 @@ function showMessage(text, type) {
 
 /* ---------------- Small utilities ---------------- */
 
+/**
+ * Read and trim the value of a form control.
+ * @param {string} id - The element id.
+ * @returns {string} The trimmed value.
+ */
 function val(id) {
     return document.getElementById(id).value.trim();
 }
 
+/**
+ * Set a form control's value, normalising null/undefined to an empty string.
+ * @param {string} id - The element id.
+ * @param {*} value - The value to set.
+ * @returns {void}
+ */
 function setVal(id, value) {
     document.getElementById(id).value = (value === null || value === undefined) ? '' : value;
 }
 
-function money(amount) {
-    return '$' + Number(amount || 0).toLocaleString('en-AU', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
-
-// Convert an API date (ISO string) to the value expected by <input type="datetime-local">
+/**
+ * Convert an API date (ISO string) to the value expected by
+ * <input type="datetime-local"> (local time, YYYY-MM-DDTHH:MM).
+ * @param {string} value - The date value returned by the API.
+ * @returns {string} The formatted value, or an empty string when invalid.
+ */
 function toDatetimeLocalValue(value) {
     if (!value) return '';
     const d = new Date(value);
@@ -388,7 +487,11 @@ function toDatetimeLocalValue(value) {
            `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-// Human-readable date for the table
+/**
+ * Format a date for the table (en-AU short date + time).
+ * @param {string} value - The raw date value.
+ * @returns {string} The human-readable date.
+ */
 function formatEventDate(value) {
     const d = new Date(value);
     if (isNaN(d.getTime())) return value || '';
@@ -398,6 +501,11 @@ function formatEventDate(value) {
     });
 }
 
+/**
+ * Escape text so it can be safely inserted into table/form innerHTML.
+ * @param {*} text - The raw value.
+ * @returns {string} The HTML-escaped text.
+ */
 function escapeHtml(text) {
     return String(text == null ? '' : text)
         .replace(/&/g, '&amp;')
