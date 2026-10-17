@@ -1,6 +1,6 @@
 // common.js - shared helper functions and navigation
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 
 // Render the navigation bar into the #navbar element
 function renderNavbar(activePage) {

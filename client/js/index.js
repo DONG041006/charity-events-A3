@@ -1,39 +1,66 @@
 // index.js - homepage logic: load and display upcoming/ongoing events
 
-document.addEventListener('DOMContentLoaded', function () {
+// Initialise the homepage once the document is ready (or immediately if the
+// script was loaded after the DOM had already been parsed).
+function initHome() {
     renderNavbar('home');
     renderFooter();
     loadUpcomingEvents();
-});
+}
 
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHome);
+} else {
+    initHome();
+}
+
+/**
+ * Load the upcoming/ongoing events from the API and render them into the
+ * homepage. The request is retried with a timeout so that a slow cold start
+ * never leaves the page stuck on the loading message.
+ */
 async function loadUpcomingEvents() {
     const container = document.getElementById('events-container');
+    const maxAttempts = 4;
 
-    try {
-        const response = await fetch(`${API_BASE}/events/upcoming`);
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const controller = new AbortController();
+        const timer = setTimeout(function () { controller.abort(); }, 8000);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        try {
+            const response = await fetch(`${API_BASE}/events/upcoming`, { signal: controller.signal });
+            clearTimeout(timer);
 
-        const events = await response.json();
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-        if (events.length === 0) {
-            container.innerHTML = '<p class="no-results">No upcoming events at the moment. Please check back later.</p>';
+            const events = await response.json();
+
+            if (events.length === 0) {
+                container.innerHTML = '<p class="no-results">No upcoming events at the moment. Please check back later.</p>';
+                return;
+            }
+
+            renderStats(events);
+            renderEventCards(events, container);
             return;
+
+        } catch (error) {
+            clearTimeout(timer);
+
+            if (attempt === maxAttempts) {
+                console.error('Failed to load events:', error);
+                container.innerHTML = `
+                    <div class="error-message">
+                        Failed to load events. Please make sure the server is running.
+                        <br>Error: ${error.message}
+                    </div>
+                `;
+            } else {
+                await new Promise(function (resolve) { setTimeout(resolve, 1500); });
+            }
         }
-
-        renderStats(events);
-        renderEventCards(events, container);
-
-    } catch (error) {
-        console.error('Failed to load events:', error);
-        container.innerHTML = `
-            <div class="error-message">
-                Failed to load events. Please make sure the server is running.
-                <br>Error: ${error.message}
-            </div>
-        `;
     }
 }
 
