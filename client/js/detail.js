@@ -112,7 +112,7 @@ function renderEventDetail(event) {
 
             <div style="margin-top: 2rem; text-align: center;">
                 <button class="btn btn-primary" style="padding: 0.8rem 3rem; font-size: 1.1rem;"
-                        onclick="registerForEvent('${event.title}')">
+                        onclick="registerForEvent(${event.id})">
                     Register Now
                 </button>
             </div>
@@ -120,7 +120,7 @@ function renderEventDetail(event) {
     `;
 }
 
-// Registration is not implemented in this assessment
-function registerForEvent(eventTitle) {
-    alert(`"${eventTitle}" registration is under construction. This feature will be available soon!`);
+// Navigate to the registration page, carrying the selected event id
+function registerForEvent(eventId) {
+    window.location.href = `registration.html?id=${eventId}`;
 }
