@@ -51,6 +51,32 @@ app.get('/api/events/upcoming', async (req, res) => {
 });
 
 /**
+ * GET /api/events
+ * Admin: returns ALL charity events regardless of status
+ * (upcoming/ongoing/completed/paused), joined with their organization
+ * and category names, sorted by event date.
+ */
+app.get('/api/events', async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT e.id, e.title, e.description, e.event_date, e.location,
+                   e.ticket_price, e.raised_amount, e.target_amount,
+                   e.status, e.image_url,
+                   o.id AS organization_id, o.name AS organization_name,
+                   c.id AS category_id, c.name AS category_name
+            FROM charity_events e
+            JOIN charity_organizations o ON e.organization_id = o.id
+            JOIN event_categories c ON e.category_id = c.id
+            ORDER BY e.event_date ASC
+        `);
+        res.json(rows);
+    } catch (err) {
+        console.error('API error:', err);
+        res.status(500).json({ error: 'Could not load events' });
+    }
+});
+
+/**
  * GET /api/categories
  * Returns all event categories (used by the search dropdown).
  */
@@ -61,6 +87,20 @@ app.get('/api/categories', async (req, res) => {
     } catch (err) {
         console.error('API error:', err);
         res.status(500).json({ error: 'Could not load categories' });
+    }
+});
+
+/**
+ * GET /api/organizations
+ * Admin: returns all charity organizations (for the event form dropdown).
+ */
+app.get('/api/organizations', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT id, name FROM charity_organizations ORDER BY name');
+        res.json(rows);
+    } catch (err) {
+        console.error('API error:', err);
+        res.status(500).json({ error: 'Could not load organizations' });
     }
 });
 
