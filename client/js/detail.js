@@ -110,17 +110,30 @@ function renderEventDetail(event) {
                 <div class="progress-bar-fill" style="width: ${progress}%;">${progress}%</div>
             </div>
 
+            <h3 style="margin-top: 2rem;">Registrations (${event.registrations.length})</h3>
+            <div class="registrations-list">
+                ${event.registrations.length > 0
+                    ? event.registrations.map(function (reg) {
+                        return `<div class="registration-item">
+                            <span class="reg-name">${reg.full_name}</span>
+                            <span class="reg-meta">${reg.tickets_purchased} ticket(s)</span>
+                            <span class="reg-meta">${formatDate(reg.registration_date)}</span>
+                        </div>`;
+                    }).join('')
+                    : '<p class="no-results">No registrations yet.</p>'}
+            </div>
+
             <div style="margin-top: 2rem; text-align: center;">
-                <button class="btn btn-primary" style="padding: 0.8rem 3rem; font-size: 1.1rem;"
-                        onclick="registerForEvent(${event.id})">
+                <a href="registration.html?id=${event.id}" class="btn btn-primary"
+                   style="padding: 0.8rem 3rem; font-size: 1.1rem; display: inline-block;">
                     Register Now
-                </button>
+                </a>
             </div>
         </div>
     `;
 }
 
-// Navigate to the registration page, carrying the selected event id
+// Navigate to the registration page for the selected event
 function registerForEvent(eventId) {
     window.location.href = `registration.html?id=${eventId}`;
 }

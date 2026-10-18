@@ -3,99 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration - Charity Events</title>
+    <title>Register - Charity Events</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- Navigation bar (rendered by JS) -->
+    <!-- Header / Nav rendered by JS -->
     <div id="navbar"></div>
 
     <div class="container">
-        <h2 class="section-title">Register for an Event</h2>
-        <p class="section-sub">Fill in your details below to secure your tickets.</p>
+        <h2 class="page-title">Event Registration</h2>
 
-        <!-- Event summary (filled by JS) -->
-        <div id="event-summary">
-            <p class="loading">Loading event details...</p>
-        </div>
-
-        <!-- Inline error (e.g. missing / invalid event id) -->
-        <div id="reg-error" class="error-message" style="display: none;"></div>
+        <!-- Event information loaded by JS from the API -->
+        <div id="event-info" class="loading">Loading event information...</div>
 
         <!-- Registration form -->
-        <div id="registration-card" class="detail-container" style="display: none; margin-top: 1.5rem;">
-            <h3 style="margin-bottom: 1.2rem; color:#5a2a1b;">Your Details</h3>
-
-            <form id="registrationForm" novalidate>
-                <div class="form-group">
-                    <label for="fullName">Full Name <span style="color:#c2410c;">*</span></label>
-                    <input type="text" id="fullName" name="full_name" maxlength="200"
-                           placeholder="e.g. Sarah Thompson" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address <span style="color:#c2410c;">*</span></label>
-                    <input type="email" id="email" name="email" maxlength="200"
-                           placeholder="e.g. you@example.com" required>
-                    <small style="color:#9c7f6e;">Used as your unique registration reference for this event.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number <span style="color:#9c7f6e; font-weight:400;">(optional)</span></label>
-                    <input type="tel" id="phone" name="phone" maxlength="30"
-                           placeholder="e.g. 0412 555 000">
-                </div>
-
-                <div class="form-group">
-                    <label for="tickets">Number of Tickets <span style="color:#c2410c;">*</span></label>
-                    <input type="number" id="tickets" name="tickets_purchased"
-                           min="1" max="10" step="1" value="1" required>
-                </div>
-
-                <!-- Order total -->
-                <div style="display:flex; justify-content:space-between; align-items:center;
-                            background:#faf1e9; border:1px solid #f2e2d5; border-radius:10px;
-                            padding:1rem 1.2rem; margin:0.5rem 0 1.2rem;">
-                    <span style="color:#5a2a1b; font-weight:600;">Total to pay</span>
-                    <strong id="totalPrice" style="font-size:1.4rem; color:#c2410c;">$0.00</strong>
-                </div>
-
-                <!-- Form-level error message (e.g. duplicate registration) -->
-                <div id="formError" class="error-message" style="display:none;"></div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        Complete Registration
-                    </button>
-                    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
-
-        <!-- Success panel (shown after a successful registration) -->
-        <div id="success-panel" class="detail-container" style="display:none; margin-top:1.5rem; text-align:center;">
-            <div style="width:64px; height:64px; margin:0 auto 1rem; border-radius:50%;
-                        background:linear-gradient(135deg,#34d399,#10b981);
-                        display:flex; align-items:center; justify-content:center;">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="2.6"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+        <h3 style="margin-top: 2rem;">Your Details</h3>
+        <form id="registration-form" class="registration-form" novalidate>
+            <div class="form-field">
+                <label for="full-name">Full Name *</label>
+                <input type="text" id="full-name" name="full_name" required>
             </div>
-            <h3 style="color:#15803d; margin-bottom:0.5rem;">Registration Confirmed!</h3>
-            <p id="success-message" style="color:#5c4638; margin-bottom:1.2rem;"></p>
-            <div id="success-details"
-                 style="text-align:left; background:#faf1e9; border:1px solid #f2e2d5;
-                        border-radius:10px; padding:1.2rem 1.4rem; margin-bottom:1.5rem;"></div>
-            <div class="form-actions" style="justify-content:center;">
-                <a id="viewDetailLink" href="#" class="btn btn-primary">View Event Details</a>
-                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            <div class="form-field">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
             </div>
-        </div>
+            <div class="form-field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-field">
+                <label for="tickets">Number of Tickets *</label>
+                <input type="number" id="tickets" name="tickets" min="1" value="1" required>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="padding: 0.8rem 3rem; font-size: 1.05rem;">
+                    Confirm Registration
+                </button>
+                <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+
+        <!-- Confirmation / error message shown here after submit -->
+        <div id="form-message" style="margin-top: 1.5rem;"></div>
     </div>
 
-    <!-- Footer (rendered by JS) -->
+    <!-- Footer rendered by JS -->
     <div id="footer"></div>
 
     <script src="js/common.js"></script>
