@@ -86,19 +86,10 @@ node server.js
 # Expected output: "Database connected successfully!" and "Server running: http://localhost:3000"
 
 # 5. Open in the browser
-#    Home:   http://localhost:3000/
-#    Search: http://localhost:3000/search.html
-#    Admin:  http://localhost:3000/admin/admin.html
+#    Home:   (https://24832708.it.scu.edu.au/)
+#    Admin:  (https://24832708.it.scu.edu.au/admin/admin.html)
 ```
 
-## Submission checklist (A3)
-
-* Source code in 3 zip files: `usernameA3-clientside.zip`, `usernameA3-adminside.zip`, `usernameA3-api.zip`
-* GitHub repository link (regular commits showing work progress)
-* Demo video: max 15 minutes (hosted on SCU OneDrive)
-* Peer evaluation form (sent to tutor)
-* GenAI usage declaration and academic integrity statement
-* Project documentation: ERD, storyboards (wireframes), report
 
 ## Author
 
