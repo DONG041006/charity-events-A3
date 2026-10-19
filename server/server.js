@@ -28,7 +28,7 @@ app.get('/api/events/upcoming', async (req, res) => {
         const [rows] = await db.query(`
             SELECT e.id, e.title, e.event_date, e.location,
                    e.ticket_price, e.raised_amount, e.target_amount,
-                   e.status, e.image_url,
+                   e.status, e.image_url, e.latitude, e.longitude,
                    o.name AS organization_name,
                    c.name AS category_name,
                    CASE
@@ -61,7 +61,7 @@ app.get('/api/events', async (req, res) => {
         const [rows] = await db.query(`
             SELECT e.id, e.title, e.description, e.event_date, e.location,
                    e.ticket_price, e.raised_amount, e.target_amount,
-                   e.status, e.image_url,
+                   e.status, e.image_url, e.latitude, e.longitude,
                    o.id AS organization_id, o.name AS organization_name,
                    c.id AS category_id, c.name AS category_name
             FROM charity_events e
@@ -133,7 +133,7 @@ app.get('/api/events/search', async (req, res) => {
         let sql = `
             SELECT e.id, e.title, e.event_date, e.location,
                    e.ticket_price, e.raised_amount, e.target_amount,
-                   e.status, e.image_url,
+                   e.status, e.image_url, e.latitude, e.longitude,
                    o.name AS organization_name,
                    c.name AS category_name,
                    CASE

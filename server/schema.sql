@@ -43,6 +43,8 @@ CREATE TABLE charity_events (
     raised_amount   DECIMAL(12,2) NOT NULL DEFAULT 0.00,  -- amount raised
     status          ENUM('upcoming','ongoing','completed','paused') NOT NULL DEFAULT 'upcoming',
     image_url       VARCHAR(500),               -- event image
+    latitude        DECIMAL(9,6) DEFAULT NULL,  -- event latitude (for Weather API)
+    longitude       DECIMAL(9,6) DEFAULT NULL,  -- event longitude (for Weather API)
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -113,61 +115,61 @@ INSERT INTO event_categories (name, description) VALUES
 -- ============================================================
 INSERT INTO charity_events
 (organization_id, category_id, title, description, event_date, location,
- ticket_price, target_amount, raised_amount, status, image_url) VALUES
+ ticket_price, target_amount, raised_amount, status, image_url, latitude, longitude) VALUES
 
 -- Event 1: upcoming (homepage)
 (1, 1, 'Annual Charity Gala Dinner 2026',
  'Join us for an elegant evening of fine dining, live entertainment, and inspiring stories as we raise funds to build schools in rural Australia. Black tie optional.',
  '2026-11-15 18:30:00', 'Sydney Convention Centre, Sydney NSW',
- 150.00, 50000.00, 12500.00, 'upcoming', 'images/dinner1.jpg'),
+ 150.00, 50000.00, 12500.00, 'upcoming', 'images/dinner1.jpg', -33.8731, 151.2106),
 
 -- Event 2: upcoming (homepage)
 (2, 2, 'Green Earth Community Fun Run',
  'A 5km fun run through Centennial Park. Every entrant receives a t-shirt and medal. All proceeds go towards our reforestation projects.',
  '2026-10-25 07:00:00', 'Centennial Park, Sydney NSW',
- 35.00, 20000.00, 8200.00, 'upcoming', 'images/run1.jpg'),
+ 35.00, 20000.00, 8200.00, 'upcoming', 'images/run1.jpg', -33.8902, 151.2312),
 
 -- Event 3: upcoming (homepage)
 (3, 3, 'Spring Charity Auction Night',
  'Bid on premium artworks, luxury getaways, and dining experiences. 100% of auction proceeds support our food delivery program for the elderly.',
  '2026-11-08 19:00:00', 'The Star Event Centre, Sydney NSW',
- 80.00, 30000.00, 5000.00, 'upcoming', 'images/auction1.jpg'),
+ 80.00, 30000.00, 5000.00, 'upcoming', 'images/auction1.jpg', -33.8662, 151.1949),
 
 -- Event 4: ongoing (homepage)
 (1, 5, 'Children Education Online Fundraiser',
  'A month-long online fundraising campaign. Donate directly and watch the progress tracker update in real time. Every dollar helps provide textbooks and scholarships.',
  '2026-10-01 00:00:00', 'Online (Australia-wide)',
- 10.00, 25000.00, 15800.00, 'ongoing', 'images/online1.jpg'),
+ 10.00, 25000.00, 15800.00, 'ongoing', 'images/online1.jpg', -33.8688, 151.2093),
 
 -- Event 5: upcoming (homepage)
 (2, 4, 'Riverside Clean-up Volunteer Day',
  'Spend a morning helping clean up the Parramatta River. Gloves and bags provided. Morning tea included. Suitable for families and groups.',
  '2026-10-18 09:00:00', 'Parramatta Park, Parramatta NSW',
- 0.00, 5000.00, 1200.00, 'upcoming', 'images/volunteer1.jpg'),
+ 0.00, 5000.00, 1200.00, 'upcoming', 'images/volunteer1.jpg', -33.8123, 151.0082),
 
 -- Event 6: completed (hidden from homepage, searchable)
 (1, 1, 'Winter Charity Dinner 2026',
  'Thank you to everyone who attended our Winter Charity Dinner. We raised $18,500 for children''s education programs.',
  '2026-07-20 18:30:00', 'Melbourne Convention Centre, Melbourne VIC',
- 120.00, 40000.00, 18500.00, 'completed', NULL),
+ 120.00, 40000.00, 18500.00, 'completed', NULL, -37.8236, 144.9530),
 
 -- Event 7: completed (hidden from homepage, searchable)
 (3, 2, 'Community Care Walkathon',
  'A successful 10km walkathon with over 500 participants. Thank you to all our sponsors and volunteers.',
  '2026-08-30 08:00:00', 'Royal Botanic Garden, Sydney NSW',
- 25.00, 15000.00, 16200.00, 'completed', NULL),
+ 25.00, 15000.00, 16200.00, 'completed', NULL, -33.8621, 151.2163),
 
 -- Event 8: paused (hidden from homepage)
 (2, 1, 'Beachside Charity Dinner',
  'This event has been postponed due to unforeseen weather concerns. We will announce a new date shortly.',
  '2026-10-20 18:00:00', 'Bondi Pavilion, Sydney NSW',
- 95.00, 18000.00, 2000.00, 'paused', NULL),
+ 95.00, 18000.00, 2000.00, 'paused', NULL, -33.8915, 151.2774),
 
 -- Event 9: upcoming (homepage)
 (3, 5, 'Elderly Care Online Auction',
  'An online silent auction featuring homemade crafts, garden produce, and services donated by local businesses. All funds support our home-visit program.',
  '2026-11-01 00:00:00', 'Online (NSW region)',
- 5.00, 10000.00, 3400.00, 'upcoming', 'images/online2.jpg');
+ 5.00, 10000.00, 3400.00, 'upcoming', 'images/online2.jpg', -33.8688, 151.2093);
 
 -- ============================================================
 -- Seed data: registrations (at least 10)

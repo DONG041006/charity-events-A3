@@ -663,3 +663,15 @@ body {
         gap: 0.5rem;
     }
 }
+
+
+/* ============================================================
+   Weather widget (Open-Meteo enhancement)
+   ============================================================ */
+.weather-block { margin: 1.5rem 0 0.5rem; }
+.weather-list { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.4rem; }
+.weather-day { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.8rem; border-radius: 0.5rem; background: #fff7ed; border: 1px solid #f3e3d2; font-size: 0.9rem; }
+.weather-ico { font-size: 1.1rem; }
+.weather-temp { font-weight: 600; color: #c2410c; }
+.weather-date { color: #7c5a4a; min-width: 2.6rem; }
+.card-weather { margin-top: 0.45rem; font-size: 0.85rem; color: #7c5a4a; }

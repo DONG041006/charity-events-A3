@@ -116,3 +116,30 @@ function animateNumber(elementId, target, isCurrency) {
     // is throttled (e.g. the tab is in the background).
     setTimeout(setFinal, duration + 150);
 }
+
+// Map an Open-Meteo weather_code to a short human-readable label
+function weatherLabel(code) {
+    if (code === 0) return 'Clear sky';
+    if (code === 1) return 'Mainly clear';
+    if (code === 2) return 'Partly cloudy';
+    if (code === 3) return 'Overcast';
+    if (code >= 45 && code <= 48) return 'Fog';
+    if (code >= 51 && code <= 55) return 'Drizzle';
+    if (code >= 61 && code <= 65) return 'Rain';
+    if (code >= 80 && code <= 82) return 'Rain showers';
+    if (code >= 95 && code <= 99) return 'Thunderstorm';
+    return '';
+}
+
+// A small weather icon for the weather code
+function weatherIcon(code) {
+    if (code === 0) return '☀️';
+    if (code === 1 || code === 2) return '🌤️';
+    if (code === 3) return '☁️';
+    if (code >= 45 && code <= 48) return '🌫️';
+    if (code >= 51 && code <= 55) return '🌦️';
+    if (code >= 61 && code <= 65) return '🌧️';
+    if (code >= 80 && code <= 82) return '🌧️';
+    if (code >= 95 && code <= 99) return '⛈️';
+    return '🌡️';
+}
