@@ -148,13 +148,25 @@ async function loadCardWeather(events) {
         if (!response.ok) throw new Error('weather ' + response.status);
 
         const data = await response.json();
-        const dailies = Array.isArray(data.daily) ? data.daily : [data.daily];
+        // Open-Meteo returns a top-level ARRAY for multi-coordinate queries:
+        // each element is { latitude, longitude, daily: {...} }.
+        let dailies;
+        if (Array.isArray(data)) {
+            dailies = data;
+        } else if (data && Array.isArray(data.daily)) {
+            dailies = data.daily;
+        } else if (data && data.daily) {
+            dailies = [data];
+        } else {
+            dailies = [];
+        }
 
         withCoords.forEach(function (ev, i) {
             const d = dailies[i];
-            if (!d || !d.weather_code || !d.weather_code[0]) return;
-            const code = d.weather_code[0];
-            const text = `${weatherIcon(code)} ${Math.round(d.temperature_2m_max[0])}°C ${weatherLabel(code)}`;
+            const daily = d && d.daily;
+            if (!daily || !daily.weather_code || !daily.weather_code[0]) return;
+            const code = daily.weather_code[0];
+            const text = `${weatherIcon(code)} ${Math.round(daily.temperature_2m_max[0])}°C ${weatherLabel(code)}`;
             cards.forEach(function (card) {
                 if (card.dataset.lat === String(ev.latitude) && card.dataset.lon === String(ev.longitude)) {
                     card.textContent = text;
